@@ -492,6 +492,8 @@ r2xi = lambda r : (1.0-r)/r
 theta2zeta = lambda theta : 1.0-np.cos(theta)
 zeta2theta = lambda zeta : np.arccos(1.0-zeta)
 
+## Conversion between radians and degress
+rad2deg = lambda theta : 360.*theta/(2*np.pi)
 
 ## back compatibility, kept for instant
 zeta_calc = zeta_chain_pm 
