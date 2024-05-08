@@ -478,7 +478,8 @@ def zeta_chain_pm(delta_phi, pressure, l1, xi, ionisation_ratio, Horder, paramet
     polarisability_XUV = XUV_index.polarisability(Horder*omegaSI, gas_type+'_'+XUV_table_type_dispersion) 
 
     zeta = (1.0/(1.0+xi)) * (
-            0.5 * pressure * N_ref * ( (polarisability_IR - polarisability_XUV) - ionisation_ratio*plasma_constant) +
+            0.5 * pressure * N_ref * ( (polarisability_IR - polarisability_XUV) 
+            - ionisation_ratio*plasma_constant) +
             2.0 * delta_phi/ (k0*l1))
     
     return zeta
