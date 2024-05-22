@@ -377,6 +377,7 @@ def eta_opt(Horder, parameters):
     return (omegaSI**2) *units.eps0*units.elmass*delta_polarisability/(units.elcharge**2)
 
 
+
 def zeta_single_segment_pm(pressure, Horder, ionisation_ratio, parameters):
     """
     Compute the geometrical phase 'zeta' for perfect phase matching within
@@ -405,6 +406,40 @@ def zeta_single_segment_pm(pressure, Horder, ionisation_ratio, parameters):
     zeta =  0.5 * pressure * N_ref * ( delta_polarisability - ionisation_ratio*plasma_constant) 
     
     return zeta
+
+def zeta_single_segment_mismatch(pressure, Horder, ionisation_ratio, parameters, l1, mismatch = np.pi*0.5):
+    """
+    Compute the geometrical phase 'zeta' for given phase mismatch within
+    the gas.
+
+    Parameters
+    ----------
+    pressure : pressure [bar]      
+    Horder : harmonic order [-]  
+    ionisation_ratio : ionisation degree [-]   
+    parameters : dict (see documentation of the module)
+    l1 : length of the gas-medium [m]
+    mismatch : phase mismatch at the end of the medium [rad] (default pi/2)
+
+    Returns
+    -------
+    zeta [-]
+    """
+    
+    gas_type = parameters['gas_type']
+    XUV_table_type_dispersion = parameters['XUV_table_type_dispersion']
+    omegaSI = parameters['omegaSI']
+    plasma_constant = units.elcharge**2 / (units.eps0 * units.elmass * omegaSI**2)
+
+    delta_polarisability = IR_index.polarisability(gas_type, mn.ConvertPhoton(omegaSI,'omegaSI','lambdaSI')) - \
+                           XUV_index.polarisability(Horder*omegaSI, gas_type+'_'+XUV_table_type_dispersion)   
+
+    k0 = omegaSI /units.c_light
+    zeta =  0.5 * pressure * N_ref * ( delta_polarisability - ionisation_ratio*plasma_constant) 
+    zeta = zeta - mismatch  / ( Horder * k0 *l1 )
+    
+    return zeta
+
 
 
 def xi_chain_pm(delta_phi, pressure, l1, zeta, ionisation_ratio, Horder, parameters):
@@ -446,6 +481,32 @@ def xi_chain_pm(delta_phi, pressure, l1, zeta, ionisation_ratio, Horder, paramet
     
     return xi
 
+def xi_opt_with_mismatch(pressure, l1, zeta, ionisation_ratio, Horder, parameters, mismatch = np.pi/2, n = 1):
+    """
+    Compute the length of the vacuum segment characterised by 'xi' to ensure overall phase jump by
+    2*pi*n within one elementary segment. 
+
+    Parameters
+    ----------
+    delta_phi : requred phase jump [rad]  
+    pressure : pressure [bar]  
+    l1 : length of one gas-medium [m]  
+    zeta : geometrical phase factor [-]   
+    ionisation_ratio : ionisation degree [-]   
+    Horder : harmonic order [-]   
+    parameters : dict (see documentation of the module)
+    mismatch : phase mismatch at the end of the medium [rad] (default pi/2)
+    n : integer multiple (default 1)  
+
+    Returns
+    -------
+    xi [-]
+    """
+    omegaSI = parameters['omegaSI']           
+    k0 = omegaSI /units.c_light    
+    xi = ( 2 * np.pi * n - mismatch ) / ( Horder * k0 * zeta * l1)
+    
+    return xi
 
 def zeta_chain_pm(delta_phi, pressure, l1, xi, ionisation_ratio, Horder, parameters):
     """
