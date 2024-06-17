@@ -435,8 +435,8 @@ def zeta_single_segment_mismatch(pressure, Horder, ionisation_ratio, parameters,
                            XUV_index.polarisability(Horder*omegaSI, gas_type+'_'+XUV_table_type_dispersion)   
 
     k0 = omegaSI /units.c_light
-    zeta =  0.5 * pressure * N_ref * ( delta_polarisability - ionisation_ratio*plasma_constant) 
-    zeta = zeta - mismatch  / ( Horder * k0 *l1 )
+    zeta =  0.5 * pressure * N_ref * ( delta_polarisability - ionisation_ratio*plasma_constant)
+    zeta = zeta - (mismatch  / ( Horder * k0 *l1 ))
     
     return zeta
 
